@@ -40,12 +40,9 @@ export default function RegisterForm({ onRegistered }: Props) {
 
     try {
       await API.post(apiRoutes.auth.register, form);
-
       setSuccess('Registered! Check your email for OTP.');
-      onRegistered(form.email);
-      
       localStorage.setItem('temp_password', form.password);
-
+      onRegistered(form.email);
     } catch (err: any) {
       if (err.response?.data) {
         setErrors(err.response.data);
@@ -54,18 +51,52 @@ export default function RegisterForm({ onRegistered }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input name="name" placeholder="Name" value={form.name} onChange={handleChange} required />
-      <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} required />
-      <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} required />
-      <input name="password_confirmation" type="password" placeholder="Confirm Password" value={form.password_confirmation} onChange={handleChange} required />
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <input
+        name="name"
+        placeholder="Name"
+        value={form.name}
+        onChange={handleChange}
+        className="w-full px-4 py-2 border border-gray-300 rounded-md"
+        required
+      />
+      <input
+        name="email"
+        type="email"
+        placeholder="Email"
+        value={form.email}
+        onChange={handleChange}
+        className="w-full px-4 py-2 border border-gray-300 rounded-md"
+        required
+      />
+      <input
+        name="password"
+        type="password"
+        placeholder="Password"
+        value={form.password}
+        onChange={handleChange}
+        className="w-full px-4 py-2 border border-gray-300 rounded-md"
+        required
+      />
+      <input
+        name="password_confirmation"
+        type="password"
+        placeholder="Confirm Password"
+        value={form.password_confirmation}
+        onChange={handleChange}
+        className="w-full px-4 py-2 border border-gray-300 rounded-md"
+        required
+      />
 
       {Object.entries(errors).map(([key, msg]) => (
-        <p key={key} style={{ color: 'red' }}>{msg}</p>
+        <p key={key} className="text-sm text-red-600">{msg}</p>
       ))}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
 
-      <button type="submit">Sign Up</button>
+      {success && <p className="text-sm text-green-600">{success}</p>}
+
+      <button type="submit" className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
+        Sign Up
+      </button>
     </form>
   );
 }

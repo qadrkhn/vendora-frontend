@@ -7,7 +7,8 @@ const apiRoutes = {
     verifyOtp: `${API_BASE}/verify-otp`,
     googleAuth: `${API_BASE}/auth/google`,
     logout: `${API_BASE}/logout`,
-    resendOtp: `${API_BASE}/resend-otp`
+    resendOtp: `${API_BASE}/resend-otp`,
+    google: `${API_BASE}/google-auth`,
   },
   user : {
     me: `${API_BASE}/me`

@@ -10,6 +10,7 @@ export type User = {
   email_verified_at: Date;
   email_verified: boolean;
   role: string;
+  picture?: string;
 };
 
 type State = {

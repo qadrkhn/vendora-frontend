@@ -1,4 +1,6 @@
 
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
 import { ThemeProvider } from "next-themes";
 
 import type { Metadata } from "next";
@@ -14,7 +16,7 @@ const interFont = Inter({
 const barlowFont = Barlow({
   variable: "--font-barlow",
   subsets: ["latin"],
-  weight: ['500', '700']
+  weight: ["500", "700"],
 });
 
 
@@ -30,16 +32,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${barlowFont.variable} ${interFont.variable} antialiased`}
-      >
-        <ThemeProvider
-          attribute='class'
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
+      <body className={`${barlowFont.variable} ${interFont.variable} antialiased`}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+            {children}
+          </GoogleOAuthProvider>
         </ThemeProvider>
       </body>
     </html>
