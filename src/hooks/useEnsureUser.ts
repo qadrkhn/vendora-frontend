@@ -4,12 +4,23 @@ import { useUserStore } from '@/stores/useUserStore';
 import API from '@/lib/api';
 import apiRoutes from '@/constants/apiRoutes';
 
+const hasToken = (): boolean => {
+  if (typeof document === 'undefined') return false;
+  return document.cookie.split(';').some((c) => c.trim().startsWith('has_token='));
+};
+
 const useEnsureUser = () => {
     const [loading, setLoading] = useState(true);
     const { user, setUser, clearUser, initialized, setInitialized } = useUserStore();
   
     useEffect(() => {
       if (initialized || user) {
+        setLoading(false);
+        return;
+      }
+
+      if (!hasToken()) {
+        setInitialized(true);
         setLoading(false);
         return;
       }

@@ -28,7 +28,7 @@ export default function UserMenu() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  if (loading) return <Loader />
+  if (loading) return <Loader className='w-7 h-7'/>
   if (!user) return null
 
   const handleLogout = async () => {
@@ -54,10 +54,10 @@ export default function UserMenu() {
 
       {open && (
         <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl ring-1 ring-neutral-400 ring-opacity-5 z-50 animate-fade-in p-2">
-          <div className="text-sm px-2 py-1 text-gray-600 border-b">{user.email}</div>
+          <div className="text-sm text-center px-2 py-0.5 text-gray-600 border-b-2">{user.email}</div>
           <button
             onClick={handleLogout}
-            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-300 rounded-md transition"
+            className="w-full text-center px-4 py-2 text-sm text-red-600 hover:bg-gray-300 rounded-md transition"
           >
             Logout
           </button>
