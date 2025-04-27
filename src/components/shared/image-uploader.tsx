@@ -2,9 +2,11 @@
 
 import React, { useRef, useState } from "react";
 import Image from "next/image";
+import { toast } from "sonner";
 
 import apiRoutes from "@/constants/apiRoutes";
 import API from "@/lib/api";
+import { MimeTypes } from "@/constants/mimeTypes";
 
 interface UploadedFile {
   id: number;
@@ -17,6 +19,7 @@ interface ImageUploaderProps {
   disabled?: boolean;
   className?: string;
   showPreview?: boolean;
+  acceptTypes?: string[];
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({
@@ -25,6 +28,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   disabled = false,
   className = "",
   showPreview = true,
+  acceptTypes = MimeTypes.images,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -33,6 +37,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
+
+    // Validate MIME type
+    for (let i = 0; i < files.length; i++) {
+      if (!acceptTypes.includes(files[i].type)) {
+        toast.error(
+          `Invalid file type: ${files[i].type}. Allowed types are ${acceptTypes}`
+        );
+        return;
+      }
+    }
 
     setUploading(true);
 
@@ -55,9 +69,21 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       const uploads: UploadedFile[] = Array.isArray(data) ? data : [data];
 
       setPreviews(uploads.map((f) => f.url));
+      toast.success("File uploaded successfully.");
       onUploaded(multiple ? uploads : uploads[0]);
-    } catch (error) {
-      console.error("Upload failed", error);
+    } catch (error: any) {
+      toast.error("Failed to upload file.");
+      const errs = error?.response?.data?.errors;
+
+      if (errs && typeof errs === "object") {
+        Object.entries(errs).forEach(([key, messages]) => {
+          if (Array.isArray(messages)) {
+            messages.forEach((msg) => toast.error(`${key}: ${msg}`));
+          } else if (typeof messages === "string") {
+            toast.error(`${key}: ${messages}`);
+          }
+        });
+      }
     } finally {
       setUploading(false);
     }
@@ -94,8 +120,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             {uploading
               ? "Uploading..."
               : multiple
-              ? "Upload Images"
-              : "Upload Image"}
+              ? "Upload Files"
+              : "Upload File"}
           </button>
         </div>
       </div>
@@ -103,7 +129,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept={acceptTypes.join(",")}
         multiple={multiple}
         onChange={handleFileChange}
         className="hidden"

@@ -101,9 +101,15 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
       } else {
         router.push("/dashboard/admin/categories");
       }
-    } catch (err) {
-      console.log(err);
-      toast.error(`Failed to save category. Please try again. ${err}`);
+    } catch (err: any) {
+      if (err?.response?.status === 422 && err.response.data?.errors) {
+        const errors = err.response.data.errors;
+        Object.entries(errors).forEach(([field, message]) => {
+          toast.error(`${field}: ${message}`);
+        });
+      } else {
+        toast.error("Failed to save category. Please try again.");
+      }
     }
   };
 

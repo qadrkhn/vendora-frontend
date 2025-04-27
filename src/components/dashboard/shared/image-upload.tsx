@@ -1,8 +1,10 @@
 "use client";
 
-import ImageUploader from "@/components/shared/image-uploader";
 import Image from "next/image";
 import { FC, useEffect, useState } from "react";
+
+import ImageUploader from "@/components/shared/image-uploader";
+import { MimeTypes } from "@/constants/mimeTypes";
 
 interface ImageUploadProps {
   disabled?: boolean;
@@ -47,6 +49,7 @@ const ImageUpload: FC<ImageUploadProps> = ({
         )}
         <ImageUploader
           multiple={false}
+          acceptTypes={MimeTypes.images}
           showPreview={false}
           onUploaded={(file) => {
             if (!Array.isArray(file)) {
