@@ -1,4 +1,4 @@
-const API_BASE = '/v1';
+const API_BASE = "/v1";
 
 const apiRoutes = {
   auth: {
@@ -10,8 +10,14 @@ const apiRoutes = {
     resendOtp: `${API_BASE}/resend-otp`,
     google: `${API_BASE}/google-auth`,
   },
-  user : {
-    me: `${API_BASE}/me`
+  user: {
+    me: `${API_BASE}/me`,
+  },
+  file: {
+    upload: `${API_BASE}/files/upload`,
+  },
+  category: {
+    create: `${API_BASE}/category`,
   },
 };
 

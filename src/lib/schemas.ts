@@ -11,12 +11,13 @@ export const CategoryFormSchema = z.object({
     .regex(/^[a-zA-Z0-9\s]+$/, {
       message: "Only letters, numbers and spaces are allowed in Name.",
     }),
-  image: z
+  file: z
     .object({
+      id: z.number(),
       url: z.string(),
     })
     .array()
-    .length(1, { message: "Choose only 1 image." }),
+    .length(1, { message: "Choose at least 1 image." }),
   url: z
     .string({
       invalid_type_error: "URL must be a string.",

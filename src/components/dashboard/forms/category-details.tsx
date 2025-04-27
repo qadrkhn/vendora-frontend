@@ -1,13 +1,17 @@
 "use client";
 
 import { FC, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { toast } from "sonner";
 
 import { CategoryInterface } from "@/lib/types";
 import { CategoryFormSchema } from "@/lib/schemas";
 
-import * as z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import {
   Card,
@@ -28,37 +32,79 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import ImageUpload from "../shared/image-upload";
+import apiRoutes from "@/constants/apiRoutes";
+import API from "@/lib/api";
 
 interface CategoryDetailsProps {
   data?: CategoryInterface;
 }
 
 const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
+  const router = useRouter();
   const form = useForm<z.infer<typeof CategoryFormSchema>>({
     mode: "onChange",
     resolver: zodResolver(CategoryFormSchema),
     defaultValues: {
       name: data?.name ?? "",
-      image: data?.image ? [{ url: data?.image }] : [],
+      file: data?.file ?? [],
       url: data?.url ?? "",
       featured: data?.featured ?? false,
     },
   });
 
   const isLoading = form.formState.isSubmitting;
+
   useEffect(() => {
     if (data) {
       form.reset({
-        name: data?.name,
-        image: data.image ? [{ url: data.image }] : [],
+        name: data?.name ?? "",
+        file: data?.file ?? [],
         url: data?.url ?? "",
-        featured: data?.featured,
+        featured: data?.featured ?? false,
       });
     }
   }, [data, form]);
 
-  const handleSubmit = async (values: z.infer<typeof CategoryFormSchema>) => {
-    console.log(values);
+  const handleSubmit = async () => {
+    const raw = form.getValues();
+
+    const parsed = CategoryFormSchema.safeParse(raw);
+    if (!parsed.success) {
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+      Object.entries(fieldErrors).forEach(([field, messages]) => {
+        messages?.forEach((msg) => {
+          toast.error(`${field}: ${msg}`);
+        });
+      });
+      return;
+    }
+
+    try {
+      const payload = parsed.data;
+
+      // API call
+      const response = await API.post(apiRoutes.category.create, payload, {
+        headers: { Accept: "application/json" },
+      });
+
+      // Displaying success message
+      toast(
+        data?.id
+          ? "Category has been updated."
+          : `Congratulations! '${response?.data?.data?.name}' is now created.`
+      );
+
+      // Redirect or Refresh data
+      if (data?.id) {
+        router.refresh();
+      } else {
+        router.push("/dashboard/admin/categories");
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error(`Failed to save category. Please try again. ${err}`);
+    }
   };
 
   return (
@@ -68,8 +114,8 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
           <CardTitle>Category Information</CardTitle>
           <CardDescription>
             {data?.id
-              ? `Update ${data?.name} infromation`
-              : " Let's create a category"}
+              ? `Update ${data?.name} information`
+              : "Let's create a category"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -78,6 +124,28 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-4"
             >
+              <FormField
+                control={form.control}
+                name="file"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <ImageUpload
+                        type="profile"
+                        value={field.value}
+                        disabled={isLoading}
+                        onChange={(file) => field.onChange([file])}
+                        onRemove={(url) =>
+                          field.onChange(
+                            field.value.filter((current) => current.url !== url)
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 disabled={isLoading}
                 control={form.control}
@@ -98,7 +166,7 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
                 name="url"
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <FormLabel>Category url</FormLabel>
+                    <FormLabel>Category URL</FormLabel>
                     <FormControl>
                       <Input placeholder="/category-url" {...field} />
                     </FormControl>
@@ -120,7 +188,7 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
                     <div className="space-y-1 leading-none">
                       <FormLabel>Featured</FormLabel>
                       <FormDescription>
-                        This Category will appear on the home page
+                        This category will appear on the home page
                       </FormDescription>
                     </div>
                   </FormItem>

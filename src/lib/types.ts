@@ -5,9 +5,9 @@ export interface DashboardSidebarMenuInterface {
 }
 
 export interface CategoryInterface {
-  id: number;
-  name: string;
-  url?: string | null;
-  image?: string | null;
-  featured: boolean;
+  id?: number;
+  name?: string;
+  url?: string;
+  file?: { id: number; url: string }[];
+  featured?: boolean;
 }
