@@ -42,12 +42,13 @@ interface CategoryDetailsProps {
 
 const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
   const router = useRouter();
+
   const form = useForm<z.infer<typeof CategoryFormSchema>>({
     mode: "onChange",
     resolver: zodResolver(CategoryFormSchema),
     defaultValues: {
       name: data?.name ?? "",
-      file: data?.file ?? [],
+      file: data?.file ? [data.file] : [],
       url: data?.url ?? "",
       featured: data?.featured ?? false,
     },
@@ -58,10 +59,10 @@ const CategoryDetails: FC<CategoryDetailsProps> = ({ data }) => {
   useEffect(() => {
     if (data) {
       form.reset({
-        name: data?.name ?? "",
-        file: data?.file ?? [],
-        url: data?.url ?? "",
-        featured: data?.featured ?? false,
+        name: data.name ?? "",
+        file: data.file ? [data.file] : [],
+        url: data.url ?? "",
+        featured: data.featured ?? false,
       });
     }
   }, [data, form]);

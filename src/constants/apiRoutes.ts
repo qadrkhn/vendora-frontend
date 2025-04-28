@@ -18,6 +18,10 @@ const apiRoutes = {
   },
   category: {
     create: `${API_BASE}/category`,
+    get: `${API_BASE}/category/`,
+    update: `${API_BASE}/category`,
+    delete: `${API_BASE}/category/`,
+    list: `${API_BASE}/category`,
   },
 };
 

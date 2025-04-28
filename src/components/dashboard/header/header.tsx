@@ -1,6 +1,6 @@
-
 // Theme toggle
 import ThemeToggle from "@/components/shared/theme-toggle";
+
 import UserMenu from "@/components/user/UserMenu";
 
 export default function Header() {

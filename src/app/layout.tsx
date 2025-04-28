@@ -7,6 +7,8 @@ import { Inter, Barlow } from "next/font/google";
 
 import ThemeToaster from "@/components/shared/theme-toaster";
 
+import ModalProvider from "@/providers/modal-provider";
+
 import "./globals.css";
 
 const interFont = Inter({
@@ -45,7 +47,9 @@ export default function RootLayout({
           <GoogleOAuthProvider
             clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}
           >
-            <main>{children}</main>
+            <ModalProvider>
+              <main>{children}</main>
+            </ModalProvider>
             <ThemeToaster />
           </GoogleOAuthProvider>
         </ThemeProvider>

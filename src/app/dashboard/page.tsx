@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-import useEnsureUser from '@/hooks/useEnsureUser';
+import useEnsureUser from "@/hooks/useEnsureUser";
 
-import Loader from '@/components/ui/Loader';
-import userRoles from '@/constants/userRoles';
+import Loader from "@/components/ui/Loader";
+import userRoles from "@/constants/userRoles";
 
 export default function DashboardPage() {
   const { user, loading } = useEnsureUser();
@@ -15,11 +15,11 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!loading && user) {
       if (user.role === userRoles.user.ADMIN) {
-        router.replace('/dashboard/admin');
+        router.replace("/dashboard/admin");
       } else if (user.role === userRoles.user.SELLER) {
-        router.replace('/dashboard/seller');
+        router.replace("/dashboard/seller");
       } else {
-        router.replace('/');
+        router.replace("/");
       }
     }
   }, [user, loading, router]);

@@ -1,5 +1,5 @@
-import ThemeToggle from '@/components/shared/theme-toggle';
-import UserMenu from '@/components/user/UserMenu';
+import ThemeToggle from "@/components/shared/theme-toggle";
+import UserMenu from "@/components/user/UserMenu";
 
 export default function Home() {
   return (

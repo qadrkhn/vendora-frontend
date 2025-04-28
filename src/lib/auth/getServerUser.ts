@@ -1,6 +1,7 @@
 // app/lib/auth/getServerUser.ts
 
-import { cookies } from 'next/headers';
+import apiRoutes from "@/constants/apiRoutes";
+import { apiServer } from "@/lib/apiServer";
 
 export type ServerUser = {
   id: number;
@@ -12,28 +13,19 @@ export type ServerUser = {
   picture?: string;
 };
 
+/**
+ * Fetches the currently authenticated user on the server-side.
+ *
+ * @returns {Promise<ServerUser | null>} - The authenticated user data or `null` if not authenticated.
+ *
+ * @example
+ * ```ts
+ * const user = await getServerUser();
+ * if (user) {
+ *   console.log(user.name);
+ * }
+ * ```
+ */
 export async function getServerUser(): Promise<ServerUser | null> {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get('access_token')?.value;
-  
-  if (!accessToken) return null;
-
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/me`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      },
-      cache: 'no-store',
-    });
-
-    if (!res.ok) return null;
-
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching server user:', error);
-    return null;
-  }
+  return await apiServer<ServerUser>(apiRoutes.user.me);
 }
